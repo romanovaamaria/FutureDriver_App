@@ -1,0 +1,35 @@
+﻿@model List<MyApp.Models.Question>
+
+@{
+    ViewData["Title"] = "Результат тесту";
+}
+
+<h2>Результати тесту</h2>
+<br />
+
+@foreach (var question in Model)
+{
+    <div class="exam_elements">
+    @Html.Partial("_QuestionPartial", question)
+</div>
+}
+
+<div class="exam_elements">
+    
+    <p>Кількість правильних відповідей: @ViewBag.CorrectAnswersCount</p>
+    <p>Час проходження тесту: @TimeSpan.FromSeconds((int)ViewBag.TotalTimeSpent).ToString(@"mm\:ss")</p>
+    <p>Загальна кількість питань: @ViewBag.TotalQuestions</p>
+    <p>Відсоток правильних відповідей: @ViewBag.Percentage%</p>
+
+@if (TempData["ClearLocalStorage"] != null)
+{
+    <script>
+        localStorage.removeItem('startTime');
+    </script>
+}
+<form asp-controller="Exam" asp-action="Index" method="get">
+    <button type="submit" class="btn btn-primary">Пройти знову</button>
+</form>
+</div>
+
+

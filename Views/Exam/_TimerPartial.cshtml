@@ -1,0 +1,23 @@
+﻿<div id="timer"></div>
+
+<script>
+    var timerElement = document.getElementById('timer');
+    var startTime = localStorage.getItem('startTime');
+
+    if (!startTime) {
+        startTime = new Date().getTime();
+        localStorage.setItem('startTime', startTime);
+    }
+
+    function updateTimer() {
+        var currentTime = new Date().getTime();
+        var elapsedTime = Math.floor((currentTime - startTime) / 1000);
+
+        var minutes = Math.floor(elapsedTime / 60);
+        var seconds = elapsedTime % 60;
+
+        timerElement.textContent = `Час: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    setInterval(updateTimer, 1000);
+</script>

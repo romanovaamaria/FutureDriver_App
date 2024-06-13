@@ -1,0 +1,38 @@
+﻿@model List<MyApp.Models.Question>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пошук</title>
+    
+</head>
+<body>
+    <div class="container">
+        <h1>Пошук</h1>
+        <form method="get" asp-action="Index">
+            <div class="form-group">
+                <input type="text" name="query" class="form-control" placeholder="Введіть категорію або ключові слова тексту питання" />
+            </div>
+            <button type="submit" class="btn btn-primary">Шукати</button>
+        </form>
+
+        @if (Model != null && Model.Count > 0)
+        {
+            <ul class="list-group mt-4">
+                @foreach (var question in Model)
+                {
+                    <div class="exam_elements">
+                        @Html.Partial("_QuestionPartial", question)
+                    </div>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Питань не знайдено.</p>
+        }
+    </div>
+</body>
+</html>

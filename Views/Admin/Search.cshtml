@@ -1,0 +1,45 @@
+﻿@model IEnumerable<MyApp.Models.Question>
+
+@{
+    ViewData["Title"] = "Пошук питань";
+}
+
+<h2>Шукати питання</h2>
+
+<form asp-action="Search" method="get">
+    <div class="form-group">
+        <label for="query">Пошук</label>
+        <input type="text" class="form-control" id="query" name="query" />
+    </div>
+    <button type="submit" class="btn btn-primary">Шукати</button>
+</form>
+
+@if (Model.Any())
+{
+    <br /><table class="search-table">
+        <thead>
+            <tr>
+                <th>Текст питання</th>
+                <th>Категорія</th>
+                <th>Дії</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var question in Model)
+            {
+                <tr>
+                    <td>@question.Text</td>
+                    <td>@question.Category</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@question.Id" class="btn btn-warning">Редагувати</a>
+                        <a asp-action="Delete" asp-route-id="@question.Id" class="btn btn-danger">Видалити</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Питань не знайдено.</p>
+}

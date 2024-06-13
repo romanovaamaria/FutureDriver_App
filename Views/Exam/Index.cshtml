@@ -1,0 +1,71 @@
+﻿@model MyApp.Models.Question
+
+@{
+    ViewData["Title"] = "Тест";
+    bool isLastQuestion = ViewBag.IsLastQuestion != null ? (bool)ViewBag.IsLastQuestion : false;
+}
+@if (TempData["ClearLocalStorage"] != null)
+{
+    <script>
+        localStorage.removeItem('startTime');
+    </script>
+}
+<div class="exam_elements">
+    <h2> @await Html.PartialAsync("_TimerPartial") </h2>
+</div>
+<div class="exam_elements">
+<h2>@Model.Text</h2>
+<br />
+
+<form id="questionForm" asp-action="SubmitAnswer" method="post">
+    <input type="hidden" id="startTime" name="startTime" />
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="Question Image" style="max-width: 100%; height: auto;" />
+            <br /> <br />
+        }
+        <ul class="answer-options">
+            @foreach (var option in Model.AnswerOptions)
+            {
+                <li>
+                    <input type="radio" name="selectedAnswer" value="@option.Number" />
+                    <label>@option.Text</label>
+                </li>
+            }
+        </ul>
+        <div class="button-group">
+            @if (isLastQuestion)
+            {
+                <button type="submit" name="action" value="Next" class="btn btn-primary">Завершити тест</button>
+                <button type="submit" name="action" value="Finish" class="btn btn-danger">Зупинити тест</button>
+            }
+            else
+            {
+                <button type="submit" name="action" value="Next" class="btn btn-primary">Далі</button>
+                <button type="submit" name="action" value="Finish" class="btn btn-danger">Зупинити тест</button>
+            }
+        </div>
+    
+</form>
+</div>
+
+<style>
+    .text-success {
+        color: green;
+    }
+
+    .text-danger {
+        color: red;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px; 
+    }
+
+</style>
+<script>
+    document.getElementById('startTime').value = localStorage.getItem('startTime');
+</script>
+

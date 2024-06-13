@@ -1,0 +1,151 @@
+﻿html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+
+.form-container {
+    width: 80%;
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.question {
+    margin-bottom: 20px;
+}
+
+    .question h3 {
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+.answer-options {
+    list-style-type: none;
+    padding: 0;
+}
+
+    .answer-options li {
+        margin-bottom: 10px;
+    }
+
+    .answer-options input[type="radio"] {
+        margin-right: 10px;
+    }
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+.text-success {
+    color: green;
+    font-weight: bold;
+}
+
+.text-danger {
+    color: red;
+    font-weight: bold;
+}
+
+.correct-answer {
+    background-color: #d4edda;
+    border-left: 5px solid green;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.wrong-answer {
+    background-color: #f8d7da;
+    border-left: 5px solid red;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.exam_elements {
+    align-self: flex-start;
+    background-color: #fff;
+    min-width: 290px;
+    max-width: 1000px;
+    margin: 4vh;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+    .exam_elements img {
+        width: 60%;
+        margin-bottom: 20px;
+    }
+
+.search-table {
+    background-color: #fff;
+    border: 2px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 20px 0;
+    width: 100%;
+    margin: auto;
+}
+
+legend {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+thead {
+    background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+    background-color: #ddd;
+}
+

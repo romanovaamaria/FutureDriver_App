@@ -1,0 +1,97 @@
+﻿@model MyApp.Models.Question
+
+@{
+    ViewData["Title"] = "Адмін";
+}
+
+<h2>Пошук запитань</h2>
+
+<form asp-action="Search" method="get">
+    <div class="form-group">
+        <label for="query">Пошук</label>
+        <input type="text" class="form-control" id="query" name="query" />
+    </div>
+    <button type="submit" class="btn btn-primary">Пошук</button>
+</form>
+
+
+<h2>Додати запитання</h2>
+
+<form asp-action="AddQuestion" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="Text">Текст запитання</label>
+        <input type="text" class="form-control" id="Text" name="Text" required />
+    </div>
+    <div class="form-group">
+        <label for="Category">Категорія</label>
+        <input type="text" class="form-control" id="Category" name="Category" required />
+    </div>
+    <div class="form-group">
+        <label for="ImageFile">Зображення</label>
+        <input type="file" class="form-control" id="ImageFile" name="ImageFile" accept=".jpg,.jpeg,.png,.gif" />
+    </div>
+    <div class="form-group">
+        <label for="AnswerOptions">Варіанти відповідей</label>
+        <div id="answerOptions">
+            @for (int i = 0; i < Model.AnswerOptions.Count; i++)
+            {
+                <div class="answer-option">
+                    @{var val = i + 1;}
+                    <input type="hidden" name="AnswerOptions[@i].Number" value=@val />
+                    <input type="text" class="form-control" name="AnswerOptions[@i].Text" placeholder="Текст варіанту відповіді" required />
+                    <input type="checkbox" name="AnswerOptions[@i].IsCorrect" onclick="checkCheckbox(this)" /> Є правильною?
+                    <br /><button type="button" class="btn btn-danger" onclick="removeOption(this)">Вилучити</button>
+                   
+                </div>
+            }
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="addOption()">Додати варіант відповіді</button>
+    </div>
+    <button type="submit" class="btn btn-primary">Додати питання</button>
+</form>
+
+<style>
+    .answer-option {
+        margin-bottom: 20px; 
+
+    }
+
+        .answer-option input[type="text"]{
+            width: 60%;
+            vertical-align: middle;
+        }
+        .answer-option input[type="checkbox"] {
+            
+        }
+        .answer-option button {
+            width: 60%;
+            vertical-align: middle; 
+        }
+
+</style>
+
+
+@section Scripts {
+    <script>
+        function checkCheckbox(checkbox) {
+            checkbox.value = checkbox.checked; // Встановлюємо значення true або false залежно від того, чи вибрано чекбокс
+        }
+        function addOption() {
+            var index = document.querySelectorAll('.answer-option').length;
+            var newOption = `
+                        <div class="answer-option">
+                            <input type="hidden" name="AnswerOptions[${index}].Number" value=${index+1} />
+                            <input type="text" class="form-control" name="AnswerOptions[${index}].Text" placeholder="Текст варіанту відповіді" required />
+                                                    <input type="checkbox" name="AnswerOptions[${index}].IsCorrect" onclick="checkCheckbox(this)" /> Є правильною?
+                            <br><button type="button" class="btn btn-danger" onclick="removeOption(this)">Вилучити</button>
+                        </div>`;
+            document.getElementById('answerOptions').insertAdjacentHTML('beforeend', newOption);
+        }
+
+        function removeOption(button) {
+            button.parentElement.remove();
+        }
+    </script>
+
+
+}

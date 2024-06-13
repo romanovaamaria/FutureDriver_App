@@ -1,0 +1,80 @@
+﻿@model MyApp.Models.Question
+
+<div>
+    <h3>@Model.Text</h3>
+
+    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="Question Image" style="max-width: 100%; height: auto;" />
+            <br /> 
+        }
+    <ul>
+        @foreach (var option in Model.AnswerOptions)
+        {
+            var cssClass = "";
+            if (Model.SelectedAnswerId != null && option.Number == Model.SelectedAnswerId)
+            {
+                cssClass = option.IsCorrect ? "text-success" : "text-danger";
+            }
+            else if (option.IsCorrect)
+            {
+                cssClass = "text-danger";
+            }
+
+            <li class="@cssClass">
+                @option.Text
+                @if (option.Number == Model.SelectedAnswerId)
+                {
+                    <span>(Ваша відповідь)</span>
+                }
+                @if (option.IsCorrect)
+                {
+                    <span>(Правильна відповідь)</span>
+                }
+            </li>
+        }
+    </ul>
+    @if (User.Identity.IsAuthenticated)
+    {
+        var formId = "saveQuestionForm-" + Model.Id;
+        var buttonId = "saveQuestionButton-" + Model.Id;
+        <form id="@formId" action="/Exam/SaveQuestion" method="post">
+            <input type="hidden" name="questionId" value="@Model.Id" />
+            <button type="button" style="width: 20%;" id="@buttonId" onclick="saveQuestion('@formId')">Зберегти</button>
+            <div id="questionSavedMessage-@Model.Id" style="display: none;">Питання збережено</div>
+        </form>
+    }
+</div>
+
+<style>
+    .text-success {
+        color: green;
+    }
+
+    .text-danger {
+        color: red;
+    }
+</style>
+
+<script>
+   
+    function saveQuestion(formId) {
+        var formData = new FormData(document.getElementById(formId));
+        fetch('/Exam/SaveQuestion', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    $('#' + formId).hide();
+                    alert('Питання збережено');
+                } else {
+                    alert('Сталася помилка під час збереження питання');
+                }
+            })
+            .catch(error => {
+                console.error('Помилка:', error);
+                alert('Сталася помилка під час збереження питання');
+            });
+    }
+</script>

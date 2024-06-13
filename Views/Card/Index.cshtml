@@ -1,0 +1,56 @@
+﻿@model List<MyApp.Models.Question>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FutureDriverApp</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/flipcard.css" />
+</head>
+<body>
+    <div class="container">
+        <h2>Збережені питання</h2>
+        @if (Model.Any())
+        {
+        <div class="card-container">
+            @foreach (var question in Model)
+            {
+                <div class="card" id="card-@question.Id" >
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <h3>@question.Text</h3>
+                               
+                            <div class="options">
+                                    @if (!string.IsNullOrEmpty(question.ImageUrl))
+                                    {
+                                        <img src="@question.ImageUrl" alt="Question Image" style="max-width: 100%; height: auto;" />
+                                        <br /> <br />
+                                    }
+                                @foreach (var option in question.AnswerOptions)
+                                {
+                                    <div class="option">@option.Text</div><br />
+                                }
+                            </div>
+                        </div>
+                        <div class="card-back">
+                            <h4>Правильна відповідь</h4>
+                            <p>@question.AnswerOptions.FirstOrDefault(option => option.IsCorrect)?.Text</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger delete-btn" onclick="deleteQuestion(@question.Id)">Видалити</button>
+                </div>
+            }
+            </div>
+        }
+        else
+        {
+            <p>Питань не знайдено.</p>
+        }
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/js/flipcard.js"></script>
+</body>
+</html>

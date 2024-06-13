@@ -1,0 +1,70 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+    var isAdmin = false;
+
+    if (user != null)
+    {
+        isAdmin = await UserManager.IsInRoleAsync(user, "admin");
+    }
+}@{
+    ViewData["Title"] = "Головна";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="jumbotron">
+            <h1 class="display-4">Ласкаво просимо до FutureDriverApp!</h1>
+            <p class="lead">Це застосунок для підготовки до іспиту з правил дорожнього руху (ПДР).</p>
+            <hr class="my-4">
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Тести</h2>
+                <p>Пройдіть різні тести, щоб підготуватися до іспиту з ПДР.</p>
+                <a class="btn btn-primary" href="/Exam/SelectTestFormat">Перейти до тестів</a>
+            </div>
+            <div class="col-md-4">
+                <h2>Перелік питань</h2>
+                <p>Ознайомтеся з питаннями з різних категорій, щоб краще підготуватися.</p>
+                <a class="btn btn-primary" href="/Browse/Index">Переглянути питання</a>
+            </div>
+            @{
+                if (User.Identity.IsAuthenticated)
+                {
+                    <div class="col-md-4">
+                        <h2>Збережені питання</h2>
+                        <p>Зберігайте питання і переглядайте їх у зручному форматі Flipcard.</p>
+
+                        <a class="btn btn-primary" href="/Card">Перейти</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-4">
+                <h2>Авторизація</h2>
+                <p>Здійсність реєстрацію для доступу до додаткових можливостей, таких як збереження питань.</p>
+            
+                <a class="btn btn-primary" href="/Account/Register">Зареєструватись</a>
+                <a href="/Account/Login">Вже маєте обліковий запис?</a> <br />
+            </div>
+                }
+            }
+
+            
+        </div>
+    </div>
+</body>
+</html>

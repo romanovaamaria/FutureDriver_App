@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Select Test Format";
+    var categories = ViewBag.Categories as List<string>;
+}
+
+<h2>Обрати формат тестування</h2>
+
+<form asp-action="StartTest" method="post">
+    <div>
+        <input type="radio" id="category" name="format" value="category" checked>
+        <label for="category">За категорією</label>
+    </div>
+    <br />
+    <div>
+        <select name="category">
+            @if (categories != null && categories.Any())
+            {
+                foreach (var category in categories)
+                {
+                    <option value="@category">@category</option>
+                }
+            }
+        </select>
+    </div>
+   <br />
+    <div>
+        <input type="radio" id="random" name="format" value="random">
+        <label for="random">Випадкові 20 питань</label>
+    </div>
+    <div>
+        <button type="submit">Розпочати тест</button>
+    </div>
+</form>
