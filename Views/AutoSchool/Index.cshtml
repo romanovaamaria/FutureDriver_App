@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Перевірка акредитації автошкіл";
+    var regions = ViewBag.Regions as List<MyApp.Models.SchoolRegion>;
+}
+
+<h2>Перевірка акредитації автошкіл</h2>
+
+<p><i>
+        Отримати доступ до проходження практичного екзамену з водіння і в результаті стати власником водійських прав можливо лише після навчання в автошколі, що має відповідну <b>ліцензію викладання</b>. За допомогою цієї сторінки ви можете знайти акредитовані автошколи за регіоном, містом, категорією водіння.
+        Виберіть параметри пошуку, щоб переглянути перелік доступних навчальних закладів.
+    </i>
+</p>
+
+
+<form id="regionForm" method="post" asp-action="GetSchools">
+    <div class="mb-3">
+        <label for="regionSelect">Регіон</label>
+        <select id="regionSelect" name="regionId" class="form-select">
+            @foreach (var region in regions)
+            {
+                <option value="@region.Id">@region.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="cityInput">Місто (необов'язково)</label>
+        <input type="text" id="cityInput" name="city" class="form-control" placeholder="Наприклад, Львів" />
+    </div>
+
+    <div class="mb-3">
+        <label for="categoryInput">Категорія (необов'язково)</label>
+        <input type="text" id="categoryInput" name="category" class="form-control" placeholder="Наприклад, B" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Знайти автошколи</button>
+</form>
+
+<hr />
+
+<!-- Спінер завантаження -->
+<div id="loadingSpinner" style="display:none; text-align:center; margin-top:15px;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Завантаження...</span>
+    </div>
+    <p>Завантаження даних автошкіл...</p>
+</div>
+
+<!-- Результати -->
+<div id="results">
+    <!-- Таблиця результатів з PartialView буде тут -->
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#regionForm").submit(function (e) {
+            e.preventDefault();
+
+            var formData = {
+                regionId: $("#regionSelect").val(),
+                city: $("#cityInput").val(),
+                category: $("#categoryInput").val()
+            };
+
+            // Показати спінер, очистити результати
+            $("#loadingSpinner").show();
+            $("#results").html("");
+
+            $.post("/AutoSchool/GetSchools", formData, function (data) {
+                $("#results").html(data);
+            })
+            .fail(function () {
+                $("#results").html("<div class='alert alert-danger'>Сталася помилка при завантаженні даних.</div>");
+            })
+            .always(function () {
+                $("#loadingSpinner").hide();
+            });
+        });
+    </script>
+}

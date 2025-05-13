@@ -62,5 +62,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "exam",
     pattern: "{controller=Exam}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "Autoschool",
+    pattern: "{controller=Autoschool}/{action=Index}/{id?}");
 
 app.Run();
