@@ -1,0 +1,17 @@
+﻿@model (string ImagePath, string DetectionResult)
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <img src="@Model.ImagePath" alt="Дорожній знак" class="img-thumbnail" />
+    </div>
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Розпізнаний знак</h3>
+            </div>
+            <div class="panel-body">
+                <h4>@Model.DetectionResult</h4>
+            </div>
+        </div>
+    </div>
+</div>

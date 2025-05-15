@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyApp.Models;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;

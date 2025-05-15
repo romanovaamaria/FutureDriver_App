@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Розпізнавання дорожніх знаків";
+}
+
+<div class="container mt-4">
+    <h2>Розпізнавання дорожніх знаків</h2>
+
+    <form method="post" enctype="multipart/form-data" asp-controller="SignDetection" asp-action="DetectSign">
+        <div class="form-group mb-3">
+            <label for="file" class="form-label">Виберіть зображення дорожнього знаку:</label>
+            <input type="file" name="file" id="file" class="form-control" accept="image/*" required />
+        </div>
+        <button type="submit" class="btn btn-primary">Розпізнати</button>
+    </form>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger mt-3">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+</div>
+@if (ViewBag.ImagePath != null && ViewBag.DetectionResult != null)
+{
+    @await Html.PartialAsync("_DetectionResult", (ImagePath: (string)ViewBag.ImagePath, DetectionResult: (string)ViewBag.DetectionResult))
+}

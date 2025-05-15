@@ -9,6 +9,7 @@ namespace MyApp.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<AnswerOption> AnswerOptions { get; set; }
         public DbSet<SavedQuestion> SavedQuestions { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
