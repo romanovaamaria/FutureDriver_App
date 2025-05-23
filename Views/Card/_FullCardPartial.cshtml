@@ -1,0 +1,23 @@
+﻿@model MyApp.Models.SavedQuestion
+
+<div class="full-card" data-question-id="@Model.Question.Id">
+    <div class="full-card-inner">
+        <div class="full-card-front">
+            <h5>@Model.Question.Text</h5>
+            @if (!string.IsNullOrEmpty(Model.Question.ImageUrl))
+            {
+                <img src="@Model.Question.ImageUrl" alt="Question Image" class="img-fluid mb-3" style="max-height: 150px;" />
+            }
+            <div class="full-card-options">
+                @foreach (var option in Model.Question.AnswerOptions)
+                {
+                    <div class="full-card-option">@option.Text</div>
+                }
+            </div>
+        </div>
+        <div class="full-card-back">
+            <h6>Правильна відповідь</h6>
+            <p class="fs-5 fw-bold text-success">@Model.Question.AnswerOptions.FirstOrDefault(o => o.IsCorrect)?.Text</p>
+        </div>
+    </div>
+</div>

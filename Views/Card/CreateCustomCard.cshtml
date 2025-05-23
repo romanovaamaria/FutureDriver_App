@@ -1,0 +1,18 @@
+﻿@using MyApp.ViewModels
+@model CustomCardViewModel
+
+<form asp-action="CreateCustomCard" method="post" enctype="multipart/form-data">
+    <div>
+        <label>Питання</label>
+        <input asp-for="QuestionText" class="form-control" />
+    </div>
+    <div>
+        <label>Відповідь</label>
+        <input asp-for="AnswerText" class="form-control" />
+    </div>
+    <div>
+        <label>Зображення (опціонально)</label>
+        <input asp-for="Image" type="file" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Створити картку</button>
+</form>

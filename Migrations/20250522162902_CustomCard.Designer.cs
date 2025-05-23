@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Models;
 
@@ -11,9 +12,11 @@ using MyApp.Models;
 namespace MyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250522162902_CustomCard")]
+    partial class CustomCard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -256,16 +259,32 @@ namespace MyApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnswerText")
+                    b.Property<string>("Answer")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("QuestionText")
+                    b.Property<DateTime?>("LastReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextRepetitionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Question")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RepetitionLevel")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -311,25 +330,7 @@ namespace MyApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CustomCardId")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("EF")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("Interval")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NextReview")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Repetition")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -337,10 +338,6 @@ namespace MyApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomCardId");
-
-                    b.HasIndex("QuestionId");
 
                     b.ToTable("SavedQuestions");
                 });
@@ -445,26 +442,6 @@ namespace MyApp.Migrations
                         .IsRequired();
 
                     b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("MyApp.Models.SavedQuestion", b =>
-                {
-                    b.HasOne("MyApp.Models.CustomCard", "CustomCard")
-                        .WithMany("SavedQuestions")
-                        .HasForeignKey("CustomCardId");
-
-                    b.HasOne("MyApp.Models.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId");
-
-                    b.Navigation("CustomCard");
-
-                    b.Navigation("Question");
-                });
-
-            modelBuilder.Entity("MyApp.Models.CustomCard", b =>
-                {
-                    b.Navigation("SavedQuestions");
                 });
 
             modelBuilder.Entity("MyApp.Models.Question", b =>

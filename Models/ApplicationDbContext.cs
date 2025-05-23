@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace MyApp.Models
 {
@@ -10,7 +11,7 @@ namespace MyApp.Models
         public DbSet<AnswerOption> AnswerOptions { get; set; }
         public DbSet<SavedQuestion> SavedQuestions { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
-
+        public DbSet<CustomCard> CustomCards { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

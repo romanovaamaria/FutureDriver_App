@@ -24,10 +24,29 @@ namespace MyApp.Models
         public bool IsCorrect { get; set; }
         public Question? Question { get; set; }
     }
+    /* public class SavedQuestion
+     {
+         public int Id { get; set; }
+         public string UserId { get; set; }
+         public int QuestionId { get; set; }
+     }*/
+
     public class SavedQuestion
     {
         public int Id { get; set; }
         public string UserId { get; set; }
-        public int QuestionId { get; set; }
+
+        public int? QuestionId { get; set; }
+        public Question? Question { get; set; }
+
+        public int? CustomCardId { get; set; }
+        public CustomCard? CustomCard { get; set; }
+
+        public DateTime? NextReview { get; set; }
+        public int? Repetition { get; set; }
+        public int? Interval { get; set; }
+        public double? EF { get; set; } = 2.5; // Easiness factor
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     }
+
 }

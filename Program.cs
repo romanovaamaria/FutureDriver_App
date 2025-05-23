@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyApp;
 using MyApp.Models;
+//using MyApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-
+//builder.Services.AddScoped<SpacedRepetitionService>();
 
 var app = builder.Build();
 
@@ -65,5 +66,8 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "Autoschool",
     pattern: "{controller=Autoschool}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "LearningPlan",
+    pattern: "{controller=LearningPlan}/{action=Index}/{id?}");
 
 app.Run();

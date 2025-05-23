@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Models;
 
@@ -11,9 +12,11 @@ using MyApp.Models;
 namespace MyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250521185725_LearningPLan")]
+    partial class LearningPLan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,7 +251,7 @@ namespace MyApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MyApp.Models.CustomCard", b =>
+            modelBuilder.Entity("MyApp.Models.LearningPlan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -256,24 +259,75 @@ namespace MyApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AnswerText")
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("DifficultFactor")
+                        .HasColumnType("float");
 
-                    b.Property<string>("QuestionText")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("EasyFactor")
+                        .HasColumnType("float");
 
-                    b.Property<string>("UserId")
+                    b.Property<int>("InitialIntervalDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("MediumFactor")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CustomCards");
+                    b.ToTable("LearningPlans");
+                });
+
+            modelBuilder.Entity("MyApp.Models.LearningTopic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EstimatedDuration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LearningPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Materials")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningPlanId");
+
+                    b.ToTable("LearningTopics");
                 });
 
             modelBuilder.Entity("MyApp.Models.Question", b =>
@@ -311,25 +365,7 @@ namespace MyApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("CustomCardId")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("EF")
-                        .HasColumnType("float");
-
-                    b.Property<int?>("Interval")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NextReview")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Repetition")
+                    b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -338,11 +374,156 @@ namespace MyApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomCardId");
-
-                    b.HasIndex("QuestionId");
-
                     b.ToTable("SavedQuestions");
+                });
+
+            modelBuilder.Entity("MyApp.Models.Student", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DriverLicenseCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasPreviousDrivingExperience")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("MyApp.Models.StudentLearningPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LearningPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OverallProgress")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningPlanId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentLearningPlans");
+                });
+
+            modelBuilder.Entity("MyApp.Models.TestResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DifficultyRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TimeSpentSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TopicProgressId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicProgressId");
+
+                    b.ToTable("TestResults");
+                });
+
+            modelBuilder.Entity("MyApp.Models.TopicProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("CurrentInterval")
+                        .HasColumnType("float");
+
+                    b.Property<double>("EaseFactor")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("FirstStudiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastStudiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LearningTopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MasteryLevel")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NextRepetitionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RepetitionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentLearningPlanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningTopicId");
+
+                    b.HasIndex("StudentLearningPlanId");
+
+                    b.ToTable("TopicProgresses");
                 });
 
             modelBuilder.Entity("MyApp.Models.UserProfile", b =>
@@ -447,29 +628,107 @@ namespace MyApp.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("MyApp.Models.SavedQuestion", b =>
+            modelBuilder.Entity("MyApp.Models.LearningTopic", b =>
                 {
-                    b.HasOne("MyApp.Models.CustomCard", "CustomCard")
-                        .WithMany("SavedQuestions")
-                        .HasForeignKey("CustomCardId");
+                    b.HasOne("MyApp.Models.LearningPlan", "LearningPlan")
+                        .WithMany("Topics")
+                        .HasForeignKey("LearningPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("MyApp.Models.Question", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuestionId");
-
-                    b.Navigation("CustomCard");
-
-                    b.Navigation("Question");
+                    b.Navigation("LearningPlan");
                 });
 
-            modelBuilder.Entity("MyApp.Models.CustomCard", b =>
+            modelBuilder.Entity("MyApp.Models.Student", b =>
                 {
-                    b.Navigation("SavedQuestions");
+                    b.HasOne("MyApp.Models.ApplicationUser", "User")
+                        .WithOne()
+                        .HasForeignKey("MyApp.Models.Student", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MyApp.Models.StudentLearningPlan", b =>
+                {
+                    b.HasOne("MyApp.Models.LearningPlan", "LearningPlan")
+                        .WithMany("Students")
+                        .HasForeignKey("LearningPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyApp.Models.Student", "Student")
+                        .WithMany("LearningPlans")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningPlan");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("MyApp.Models.TestResult", b =>
+                {
+                    b.HasOne("MyApp.Models.TopicProgress", "TopicProgress")
+                        .WithMany("TestResults")
+                        .HasForeignKey("TopicProgressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TopicProgress");
+                });
+
+            modelBuilder.Entity("MyApp.Models.TopicProgress", b =>
+                {
+                    b.HasOne("MyApp.Models.LearningTopic", "LearningTopic")
+                        .WithMany("StudentProgresses")
+                        .HasForeignKey("LearningTopicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MyApp.Models.StudentLearningPlan", "StudentLearningPlan")
+                        .WithMany("TopicProgresses")
+                        .HasForeignKey("StudentLearningPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningTopic");
+
+                    b.Navigation("StudentLearningPlan");
+                });
+
+            modelBuilder.Entity("MyApp.Models.LearningPlan", b =>
+                {
+                    b.Navigation("Students");
+
+                    b.Navigation("Topics");
+                });
+
+            modelBuilder.Entity("MyApp.Models.LearningTopic", b =>
+                {
+                    b.Navigation("StudentProgresses");
                 });
 
             modelBuilder.Entity("MyApp.Models.Question", b =>
                 {
                     b.Navigation("AnswerOptions");
+                });
+
+            modelBuilder.Entity("MyApp.Models.Student", b =>
+                {
+                    b.Navigation("LearningPlans");
+                });
+
+            modelBuilder.Entity("MyApp.Models.StudentLearningPlan", b =>
+                {
+                    b.Navigation("TopicProgresses");
+                });
+
+            modelBuilder.Entity("MyApp.Models.TopicProgress", b =>
+                {
+                    b.Navigation("TestResults");
                 });
 #pragma warning restore 612, 618
         }

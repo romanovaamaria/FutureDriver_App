@@ -1,56 +1,178 @@
-﻿@model List<MyApp.Models.Question>
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Globalization
+@{
+    ViewData["Title"] = "Збережені питання";
+    var newCards = ViewBag.NewCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
+    var overdueCards = ViewBag.OverdueCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
+    var todayCards = ViewBag.TodayCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
+    var tomorrowCards = ViewBag.TomorrowCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
+    var futureCards = ViewBag.FutureCards as Dictionary<DateTime, List<MyApp.Models.SavedQuestion>> ?? new Dictionary<DateTime, List<MyApp.Models.SavedQuestion>>();
+    var today = (DateTime)ViewBag.Today;
+    var tomorrow = (DateTime)ViewBag.Tomorrow;
+}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FutureDriverApp</title>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/flipcard.css" />
+    <link rel="stylesheet" href="~/css/flipcard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+
 </head>
 <body>
-    <div class="container">
-        <h2>Збережені питання</h2>
-        @if (Model.Any())
+    <div class="container mt-4">
+        <h2>Інтервальне повторення</h2>
+
+        <p class="text-muted">
+            <l>За потреби перегляньте опис в кінці сторінки.</l>
+        </p>
+        @Html.AntiForgeryToken()
+
+        @{
+            // Створюємо список категорій з їх даними
+            var categories = new List<(List<MyApp.Models.SavedQuestion> Cards, string Title, string DateAttr)>
         {
-        <div class="card-container">
-            @foreach (var question in Model)
+        (newCards, "🆕 Нові питання (ще не повторювались)", "new"),
+        (overdueCards, "❗ Прострочені", "overdue"),
+        (todayCards, "📅 Сьогоднішні повторення", today.ToString("yyyy-MM-dd")),
+        (tomorrowCards, "📅 Завтрашні повторення", tomorrow.ToString("yyyy-MM-dd"))
+        };
+
+            // Додаємо майбутні дати
+            foreach (var futureGroup in futureCards)
             {
-                <div class="card" id="card-@question.Id" >
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <h3>@question.Text</h3>
-                               
-                            <div class="options">
+                categories.Add((futureGroup.Value, $"🔜 Повторити {futureGroup.Key:dd.MM.yyyy}", futureGroup.Key.ToString("yyyy-MM-dd")));
+            }
+        }
+
+        @foreach (var (cards, title, dateAttr) in categories)
+        {
+            <div class="drop-zone mb-4 p-3 border rounded" data-date="@dateAttr">
+                <h4>@title</h4>
+
+                @if (!cards.Any())
+                {
+                    <p class="text-muted">Немає карток у цій категорії.</p>
+                }
+                else
+                {
+                    <div class="card-container">
+                        @foreach (var sq in cards)
+                        {
+                            var question = sq.Question;
+                            <div class="compact-card" data-question-id="@question.Id" draggable="true">
+                                <div class="compact-card-question">
+                                    @question.Text
+                                </div>
+                                <div class="compact-card-footer">
+                                    <span>@question.AnswerOptions.Count варіант@(question.AnswerOptions.Count > 1 ? (question.AnswerOptions.Count < 5 ? "и" : "ів") : "")</span>
                                     @if (!string.IsNullOrEmpty(question.ImageUrl))
                                     {
-                                        <img src="@question.ImageUrl" alt="Question Image" style="max-width: 100%; height: auto;" />
-                                        <br /> <br />
+                                        <span class="has-image-icon">📷</span>
                                     }
-                                @foreach (var option in question.AnswerOptions)
-                                {
-                                    <div class="option">@option.Text</div><br />
-                                }
+                                </div>
+                                <button class="btn btn-danger btn-sm delete-btn" onclick="deleteQuestion(@question.Id)">×</button>
                             </div>
-                        </div>
-                        <div class="card-back">
-                            <h4>Правильна відповідь</h4>
-                            <p>@question.AnswerOptions.FirstOrDefault(option => option.IsCorrect)?.Text</p>
-                        </div>
+                        }
                     </div>
-                    <button class="btn btn-danger delete-btn" onclick="deleteQuestion(@question.Id)">Видалити</button>
-                </div>
-            }
+                }
             </div>
-        }
-        else
-        {
-            <p>Питань не знайдено.</p>
         }
     </div>
 
+    <!-- Модальне вікно для повної картки -->
+    <div class="modal fade" id="fullCardModal" tabindex="-1" aria-labelledby="fullCardModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fullCardModalLabel">Перегляд питання</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+                <div class="modal-body" id="fullCardContent">
+                    <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Завантаження...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" id="flipCardBtn">Показати відповідь</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal для оцінки -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Оцініть відповідь</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Наскільки добре ви знали відповідь?</p>
+                    <div class="d-flex gap-2" id="rating-buttons">
+                        @for (int i = 0; i <= 5; i++)
+                        {
+                            <button class="btn btn-outline-primary rate-btn" data-rating="@i">@i</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Як працює інтервальне повторення</h2>
+
+    <p>
+        Після перегляду кожної картки ти ставиш оцінку своєму рівню знань від <strong>0</strong> до <strong>5</strong>.
+        На основі цієї оцінки система обчислює, коли найкраще повторити цю картку знову, щоб забезпечити оптимальне запам’ятовування.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Оцінка</th>
+                <th>Пояснення</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>5</strong></td>
+                <td>Впевнено знав відповідь</td>
+            </tr>
+            <tr>
+                <td><strong>4</strong></td>
+                <td>Невелике вагання</td>
+            </tr>
+            <tr>
+                <td><strong>3</strong></td>
+                <td>Згадав з труднощами</td>
+            </tr>
+            <tr>
+                <td><strong>2</strong></td>
+                <td>Не згадав, але знайоме</td>
+            </tr>
+            <tr>
+                <td><strong>1</strong></td>
+                <td>Частково пам’ятав, але помилився</td>
+            </tr>
+            <tr>
+                <td><strong>0</strong></td>
+                <td>Не знав зовсім</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        🔧 Також ти можеш вручну змінювати дату наступного повторення, перетягнувши карту в обрану категорію.
+    </p>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/js/flipcard.js"></script>
+    <script src="~/js/flipcard.js" asp-append-version="true"></script>
 </body>
 </html>

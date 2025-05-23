@@ -145,14 +145,14 @@ namespace MyApp.Controllers
                 {
                     _questions[i].SelectedAnswerId = _selectedAnswers[i];
                     int index = _questions[i].SelectedAnswerId.HasValue ? _questions[i].SelectedAnswerId.Value : 0;
-                    if (index>=1)
+                    if (index >= 1)
                     {
                         if (_questions[i].AnswerOptions[index - 1].IsCorrect == true)
                         {
                             correctAnswersCount++;
                         }
                     }
-                    
+
                 }
             }
             return _questions;

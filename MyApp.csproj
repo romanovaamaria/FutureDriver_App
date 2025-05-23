@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="PythonEnv\Scripts\" />
+    <Folder Include="Services\" />
     <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
