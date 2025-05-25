@@ -33,7 +33,7 @@
         card.addEventListener('dragstart', handleDragStart);
     });
 
-    // НОВИЙ КОД: Обробка компактних карток
+    //  Обробка компактних карток
     compactCards.forEach(function (card) {
         card.addEventListener('click', function (e) {
             // Перевіряємо чи це не кнопка видалення
@@ -55,7 +55,7 @@
         card.addEventListener('dragstart', handleDragStart);
     });
 
-    // НОВА ФУНКЦІЯ: Завантаження повної картки
+    //  Завантаження повної картки
     function loadFullCard(questionId) {
         if (!fullCardModal) return;
 
@@ -92,7 +92,7 @@
             });
     }
 
-    // НОВА ФУНКЦІЯ: Перевороту повної картки в модалі
+    //  Перевороту повної картки в модалі
     function flipFullCard() {
         if (!currentFullCard) return;
 
@@ -115,7 +115,7 @@
         }
     }
 
-    // НОВА ФУНКЦІЯ: Швидка оцінка без модального вікна
+    //  Швидка оцінка без модального вікна
     window.rateAndClose = function (rating) {
         if (!currentFullCard) return;
         const questionId = currentFullCard.dataset.questionId;
@@ -123,7 +123,7 @@
         fullCardModal.hide();
     };
 
-    // НОВА ФУНКЦІЯ: Відправка оцінки
+    //  Відправка оцінки
     function submitRating(questionId, rating) {
         fetch('/Card/RateAnswer', {
             method: 'POST',
@@ -151,7 +151,7 @@
             });
     }
 
-    // ОНОВЛЕНИЙ існуючий код для rate buttons
+    //  rate buttons
     document.querySelectorAll('.rate-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const rating = parseInt(this.dataset.rating);
@@ -170,12 +170,12 @@
         });
     });
 
-    // Існуючий код handleDragStart (без змін)
+    //handleDragStart 
     function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', e.target.dataset.questionId);
     }
 
-    // Існуючий код drag and drop (без змін)
+    // drag and drop 
     document.querySelectorAll('.drop-zone').forEach(zone => {
         zone.addEventListener('dragover', e => {
             e.preventDefault();
@@ -241,7 +241,7 @@
     });
 });
 
-// Існуюча функція deleteQuestion (без змін)
+// deleteQuestion (без змін)
 function deleteQuestion(questionId) {
     if (confirm('Ви впевнені, що хочете видалити це питання?')) {
         const form = document.createElement('form');

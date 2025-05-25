@@ -12,6 +12,8 @@ namespace MyApp.Models
         public DbSet<SavedQuestion> SavedQuestions { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<CustomCard> CustomCards { get; set; }
+        public DbSet<UserGamification> UserGamifications { get; set; }
+        public DbSet<UserBadge> UserBadges { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -26,6 +28,16 @@ namespace MyApp.Models
                 .HasOne(a => a.Question)
                 .WithMany(q => q.AnswerOptions)
                 .HasForeignKey(a => a.QuestionId);
+
+            builder.Entity<UserGamification>()
+                .HasOne(g => g.User)
+                .WithOne()
+                .HasForeignKey<UserGamification>(g => g.UserId);
+
+            builder.Entity<UserBadge>()
+                .HasOne(b => b.Gamification)
+                .WithMany(g => g.Badges)
+                .HasForeignKey(b => b.UserId);
         }
     }
 }

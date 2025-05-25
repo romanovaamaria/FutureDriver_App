@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MyApp;
 using MyApp.Models;
+using MyApp.Services;
 //using MyApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
 
-//builder.Services.AddScoped<SpacedRepetitionService>();
+builder.Services.AddScoped<IRepetitionSchedulerService, SpacedRepetitionService>();
+builder.Services.AddScoped<IGamificationService, GamificationService>();
 
 var app = builder.Build();
 

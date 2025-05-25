@@ -2,6 +2,7 @@
 @using System.Globalization
 @{
     ViewData["Title"] = "Збережені питання";
+    var masteredCards = ViewBag.MasteredCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
     var newCards = ViewBag.NewCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
     var overdueCards = ViewBag.OverdueCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
     var todayCards = ViewBag.TodayCards as List<MyApp.Models.SavedQuestion> ?? new List<MyApp.Models.SavedQuestion>();
@@ -37,8 +38,10 @@
         {
         (newCards, "🆕 Нові питання (ще не повторювались)", "new"),
         (overdueCards, "❗ Прострочені", "overdue"),
+        (masteredCards, "✅ Опановані", "mastered"),
         (todayCards, "📅 Сьогоднішні повторення", today.ToString("yyyy-MM-dd")),
         (tomorrowCards, "📅 Завтрашні повторення", tomorrow.ToString("yyyy-MM-dd"))
+
         };
 
             // Додаємо майбутні дати

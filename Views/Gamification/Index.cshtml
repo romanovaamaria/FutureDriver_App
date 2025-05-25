@@ -1,0 +1,71 @@
+﻿@using MyApp.ViewModels
+@model GamificationViewModel
+
+@{
+    ViewData["Title"] = "Гейміфікація";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="display-5">🔥 Ваш Streak: <strong>@Model.StreakDays</strong> днів</h1>
+        <p class="lead text-muted">@Model.MotivationalMessage</p>
+    </div>
+
+    <hr />
+
+    <h2 class="mb-3">🏅 Отримані нагороди</h2>
+
+    @if (Model.EarnedBadges == null || !Model.EarnedBadges.Any())
+    {
+        <p class="text-muted fst-italic">Поки що у вас немає отриманих нагород. Почніть навчання, щоб отримувати бейджі!</p>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            @foreach (var badge in Model.EarnedBadges)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-success">
+                        <div class="card-body text-center">
+                            <div class="display-4 mb-2">@badge.EmojiIcon</div>
+                            <h5 class="card-title">@badge.Title</h5>
+                            <p class="card-text text-muted mb-1">@badge.Description</p>
+                        </div>
+                        <div class="card-footer text-muted text-center small">
+                            Отримано @badge.DateEarned.ToShortDateString()
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <hr class="my-5" />
+
+    <h2 class="mb-3">🔓 Нагороди в процесі</h2>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var badge in Model.InProgressBadges)
+        {
+            <div class="col">
+                <div class="card shadow-sm border-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="display-6 me-3">@badge.EmojiIcon</div>
+                            <div>
+                                <h5 class="mb-1">@badge.Title</h5>
+                                <p class="mb-0 text-muted">@badge.Description</p>
+                            </div>
+                        </div>
+                        <div class="progress" style="height: 1.25rem;">
+                            <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated"
+                                 role="progressbar" style="width: @badge.ProgressPercentage%;"
+                                 aria-valuenow="@badge.ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                                @badge.ProgressPercentage.ToString("0.0")%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
