@@ -1,29 +1,27 @@
-﻿namespace MyApp.Models
-{
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
-
-    namespace MyApp.Models
+﻿
+using System.ComponentModel.DataAnnotations.Schema;
+namespace MyApp.Models
     {
+
+
         public class TestResult
         {
-            [Key]
             public int Id { get; set; }
+            public string UserId { get; set; }
 
-            public string? UserId { get; set; }
+            public DateTime DateTaken { get; set; } = DateTime.UtcNow;
 
-            public string Category { get; set; }
+            public string? Category { get; set; }
 
             public int CorrectAnswers { get; set; }
-
             public int TotalQuestions { get; set; }
+            public float Percentage { get; set; } // 0.0 - 100.0
 
-            public float Percentage { get; set; }
+            public int TimeSpentSeconds { get; set; } // Тривалість проходження
 
-            public int TimeSpentSeconds { get; set; }
+            public string QuestionsJson { get; set; } = "";
 
-            public DateTime TestDate { get; set; }
         }
     }
-}
+
+

@@ -35,22 +35,37 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Exam" asp-action="Index">Тести</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="SignDetection" asp-action="Index">Розпізнавання знаків</a>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Питання
+                                Матеріали
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="questionDropdown">
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Browse" asp-action="Index">Огляд питань</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="SignDetection" asp-action="Index">Розпізнавання знаків</a></li>
                             @{
                             if (User.Identity.IsAuthenticated)
                             {
                                  <li><a class="dropdown-item" asp-area="" asp-controller="Card" asp-action="Index">Збережені питання</a></li>
-                                 <li><a class="dropdown-item" asp-area="" asp-controller="Gamification" asp-action="Index">Мій прогрес</a></li>
                             }}
                             </ul>
+
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Організація навчання
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="questionDropdown">
+                                @{
+                                    if (User.Identity.IsAuthenticated)
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Card" asp-action="Index">Збережені питання</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Gamification" asp-action="Index">Успішність</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="TestResults" asp-action="Index">Історія тестів</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Calendar" asp-action="Index">Календар</a></li>
+                                    }
+                                }
+                            </ul>
+
                         </li>
                        
                         

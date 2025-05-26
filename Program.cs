@@ -31,6 +31,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddScoped<IRepetitionSchedulerService, SpacedRepetitionService>();
 builder.Services.AddScoped<IGamificationService, GamificationService>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 
 var app = builder.Build();
 

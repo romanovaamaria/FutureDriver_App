@@ -1,5 +1,4 @@
 ﻿@model List<MyApp.Models.AutoSchool>
-
 @if (Model.Count == 0)
 {
     <p class="text-danger">Не було знайдено автошкіл за обраними параметрами</p>
@@ -7,31 +6,25 @@
 else
 {
     <h3>Знайдено @Model.Count автошкіл:</h3>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>Назва</th>
-                <th>ЄДРПОУ</th>
-                <th>Категорії</th>
-                <th>Адреса</th>
-                <th>Адреса класів</th>
-                <th>Контакти</th>
-                <th>Термін акредитації</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var school in Model)
-            {
-                <tr>
-                    <td>@school.Name</td>
-                    <td>@school.EDRPOU</td>
-                    <td>@school.Categories</td>
-                    <td>@school.Address</td>
-                    <td>@school.ClassroomsAddress</td>
-                    <td>@school.Contacts</td>
-                    <td>@school.AccreditationTerm</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+
+    <div class="row">
+        @foreach (var school in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@school.Name</h5>
+                        <p class="card-text">
+                            <strong>ЄДРПОУ:</strong> @school.EDRPOU<br>
+                            <strong>Категорії:</strong> @school.Categories<br>
+                            <strong>Адреса:</strong> @school.Address<br>
+                            <strong>Класи:</strong> @school.ClassroomsAddress<br>
+                            <strong>Контакти:</strong> @school.Contacts<br>
+                            <strong>Акредитація до:</strong> @school.AccreditationTerm
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 }

@@ -1,0 +1,98 @@
+﻿@model UserSettingsForm
+
+@{
+    ViewData["Title"] = "Налаштування календаря";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">🎯 Налаштування календаря навчання</h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Налаштуйте ваш персональний календар для ефективного навчання.
+                        Система автоматично створить розклад повторень на основі алгоритму інтервального повторення.
+                    </p>
+
+                    <form asp-action="Setup" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-4">
+                            <label asp-for="DesiredNewTopicInterval" class="form-label">
+                                📚 Інтервал додавання нових тем (дні)
+                            </label>
+                            <input asp-for="DesiredNewTopicInterval"
+                                   class="form-control"
+                                   min="1"
+                                   max="30"
+                                   type="number" />
+                            <div class="form-text">
+                                Кожні скільки днів ви хочете вивчати нову тему?
+                                Рекомендується: 3-7 днів для оптимального навантаження.
+                            </div>
+                            <span asp-validation-for="DesiredNewTopicInterval" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="PreferredStudyTime" class="form-label">
+                                ⏰ Бажаний час навчання (необов'язково)
+                            </label>
+                            <input asp-for="PreferredStudyTime"
+                                   class="form-control"
+                                   type="time" />
+                            <div class="form-text">
+                                Оберіть час дня, коли вам зручніше навчатися.
+                                Це буде використовуватися для нагадувань.
+                            </div>
+                            <span asp-validation-for="PreferredStudyTime" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="NotificationsEnabled"
+                                       class="form-check-input"
+                                       type="checkbox" />
+                                <label asp-for="NotificationsEnabled" class="form-check-label">
+                                    🔔 Увімкнути сповіщення
+                                </label>
+                                <div class="form-text">
+                                    Отримувати нагадування про заплановані повторення та нові теми.
+                                </div>
+                            </div>
+                            <span asp-validation-for="NotificationsEnabled" class="text-danger"></span>
+                        </div>
+
+                        <div class="bg-light p-3 rounded mb-4">
+                            <h5 class="mb-3">🧠 Як працює система:</h5>
+                            <ul class="mb-0">
+                                <li><strong>Нові теми</strong> - додаються згідно з вашим інтервалом</li>
+                                <li><strong>Повторення тем</strong> - базуються на результатах тестів</li>
+                                <li><strong>Картки для повторення</strong> - створюються автоматично</li>
+                                <li><strong>Адаптивні інтервали</strong> - система підлаштовується під ваш прогрес</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                🚀 Створити календар
+                            </button>
+                            <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                                Скасувати
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

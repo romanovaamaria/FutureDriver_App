@@ -48,5 +48,14 @@ namespace MyApp.Models
         public double? EF { get; set; } = 2.5; // Easiness factor
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     }
+    public class QuestionStatistics
+    {
+        public int Id { get; set; }
+        public int QuestionId { get; set; }
+        public int TotalAttempts { get; set; } = 0;
+        public int WrongAttempts { get; set; } = 0;
+
+        public Question Question { get; set; } // Навігаційна властивість (опціонально)
+    }
 
 }

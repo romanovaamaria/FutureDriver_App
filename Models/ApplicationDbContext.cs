@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MyApp.Models;
 using System.Reflection.Emit;
 
 namespace MyApp.Models
@@ -14,6 +15,10 @@ namespace MyApp.Models
         public DbSet<CustomCard> CustomCards { get; set; }
         public DbSet<UserGamification> UserGamifications { get; set; }
         public DbSet<UserBadge> UserBadges { get; set; }
+        public DbSet<TestResult> TestResults { get; set; }
+        public DbSet<QuestionStatistics> QuestionStatistics { get; set; }
+        public DbSet<UserSettings> UserSettings { get; set; }
+        public DbSet<CalendarTask> CalendarTasks { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -38,6 +43,12 @@ namespace MyApp.Models
                 .HasOne(b => b.Gamification)
                 .WithMany(g => g.Badges)
                 .HasForeignKey(b => b.UserId);
+            // Композиція: при видаленні UserSettings видаляються CalendarTasks
+            builder.Entity<UserSettings>()
+                .HasMany(us => us.CalendarTasks)
+                .WithOne(ct => ct.UserSettings)
+                .HasForeignKey(ct => ct.UserSettingsId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

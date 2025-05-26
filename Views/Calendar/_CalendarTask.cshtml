@@ -1,0 +1,65 @@
+﻿@model CalendarTask
+
+@{
+    var priorityClass = Model.Priority switch
+    {
+        1 => "priority-critical",
+        2 => "priority-high",
+        3 => "priority-medium",
+        4 or 5 => "priority-low",
+        _ => "priority-medium"
+    };
+
+    var typeClass = Model.TaskType switch
+    {
+        CalendarTaskType.NewTopic => "type-new-topic",
+        CalendarTaskType.ReviewTopic => "type-topic-review",
+        CalendarTaskType.ReviewCards => "type-card-review",
+        _ => ""
+    };
+
+    var taskTitle = Model.TaskType switch
+    {
+        CalendarTaskType.NewTopic => $"📖 {Model.Category}",
+        CalendarTaskType.ReviewTopic => $"🔄 {Model.Category}",
+        CalendarTaskType.ReviewCards => $"🃏 {Model.Category}",
+        _ => Model.Category
+    };
+}
+
+<div class="calendar-task @priorityClass @typeClass"
+     data-task-id="@Model.Id"
+     draggable="true"
+     ondragstart="dragStart(event)"
+     ondragend="dragEnd(event)"
+     title="@($"{taskTitle} (EF: {Model.EF:F1}, Rep: {Model.Repetition})")">
+
+    <div class="calendar-task-title">
+        @taskTitle
+    </div>
+
+    <div class="task-actions">
+        @if (Model.TaskType == CalendarTaskType.ReviewCards)
+        {
+            <button type="button" class="task-action"
+                    onclick="showTaskDetails(@Model.Id)"
+                    title="Детальна інформація">
+                ℹ️
+            </button>
+        }
+        else if (Model.TaskType == CalendarTaskType.NewTopic || Model.TaskType == CalendarTaskType.ReviewTopic)
+        {
+            <button type="button" class="task-action"
+                    onclick="showRateModal(@Model.Id)"
+                    title="Оцінити завдання">
+                ⭐
+            </button>
+        }
+
+        <button type="button" class="task-action"
+                onclick="deleteTask(@Model.Id)"
+                title="Видалити завдання">
+            🗑️
+        </button>
+    </div>
+</div>

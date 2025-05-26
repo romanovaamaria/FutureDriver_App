@@ -1,0 +1,327 @@
+﻿@{
+    ViewData["Title"] = "Календар навчання";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/calendar.css" rel="stylesheet" />
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">📅 Календар навчання</h2>
+
+            <!-- Статистика -->
+            <div class="row mb-4">
+                <div class="col-md-2">
+                    <div class="card text-center border-success">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">@ViewBag.MasteredTasks.Count</h5>
+                            <p class="card-text small">Опановано</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">@ViewBag.NewTasks.Count</h5>
+                            <p class="card-text small">Нові теми</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center border-danger">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">@ViewBag.OverdueTasks.Count</h5>
+                            <p class="card-text small">Прострочені</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center border-warning">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">@ViewBag.TodayTasks.Count</h5>
+                            <p class="card-text small">Сьогодні</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="card text-center border-info">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">@ViewBag.TomorrowTasks.Count</h5>
+                            <p class="card-text small">Завтра</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Календар -->
+            <div class="calendar-container">
+                <!-- Заголовки днів тижня -->
+                <div class="calendar-header">
+                    <div class="calendar-day-header">Пн</div>
+                    <div class="calendar-day-header">Вт</div>
+                    <div class="calendar-day-header">Ср</div>
+                    <div class="calendar-day-header">Чт</div>
+                    <div class="calendar-day-header">Пт</div>
+                    <div class="calendar-day-header">Сб</div>
+                    <div class="calendar-day-header">Нд</div>
+                </div>
+
+                <!-- Дні календаря -->
+                <div class="calendar-days" id="calendar-days">
+                    @{
+                        var today = (DateTime)ViewBag.Today;
+                        var startOfMonth = new DateTime(today.Year, today.Month, 1);
+                        var startOfCalendar = startOfMonth.AddDays(-(int)startOfMonth.DayOfWeek + 1);
+                        if (startOfMonth.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            startOfCalendar = startOfCalendar.AddDays(-7);
+                        }
+
+                        var allTasks = new List<CalendarTask>();
+                        allTasks.AddRange(ViewBag.MasteredTasks);
+                        allTasks.AddRange(ViewBag.NewTasks);
+                        allTasks.AddRange(ViewBag.OverdueTasks);
+                        allTasks.AddRange(ViewBag.TodayTasks);
+                        allTasks.AddRange(ViewBag.TomorrowTasks);
+
+                        foreach (var futureGroup in (Dictionary<DateTime, List<CalendarTask>>)ViewBag.FutureTasks)
+                        {
+                            allTasks.AddRange(futureGroup.Value);
+                        }
+                    }
+
+                    @for (int i = 0; i < 42; i++)
+                    {
+                        var currentDate = startOfCalendar.AddDays(i);
+                        var dayTasks = allTasks.Where(t => t.NextReview.Date == currentDate.Date).ToList();
+                        var isToday = currentDate.Date == today.Date;
+                        var isOtherMonth = currentDate.Month != today.Month;
+
+                        <div class="calendar-day @(isToday ? "today" : "") @(isOtherMonth ? "other-month" : "")"
+                             data-date="@currentDate.ToString("yyyy-MM-dd")"
+                             ondrop="drop(event)"
+                             ondragover="allowDrop(event)"
+                             ondragenter="dragEnter(event)"
+                             ondragleave="dragLeave(event)">
+
+                            <div class="calendar-day-number">@currentDate.Day</div>
+
+                            <div class="calendar-tasks">
+                                @foreach (var task in dayTasks)
+                                {
+                                    @await Html.PartialAsync("_CalendarTask", task)
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно для деталей завдання -->
+<div class="modal fade" id="taskModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Деталі завдання</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="taskModalBody">
+                <!-- Контент завантажується динамічно -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальне вікно для оцінки -->
+<div class="modal fade" id="rateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Оцінити завдання</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="rateModalBody">
+                <!-- Контент завантажується динамічно -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Drag and Drop функціональність
+    let draggedTask = null;
+
+    function dragStart(event) {
+        draggedTask = event.target;
+        event.target.classList.add('dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/html', event.target.outerHTML);
+    }
+
+    function dragEnd(event) {
+        event.target.classList.remove('dragging');
+        draggedTask = null;
+    }
+
+    function allowDrop(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    function dragEnter(event) {
+        event.preventDefault();
+        if (event.target.classList.contains('calendar-day')) {
+            event.target.classList.add('drop-target');
+        }
+    }
+
+    function dragLeave(event) {
+        if (event.target.classList.contains('calendar-day')) {
+            event.target.classList.remove('drop-target');
+        }
+    }
+
+    function drop(event) {
+        event.preventDefault();
+
+        let dropTarget = event.target;
+        while (dropTarget && !dropTarget.classList.contains('calendar-day')) {
+            dropTarget = dropTarget.parentNode;
+        }
+
+        if (dropTarget && draggedTask) {
+            dropTarget.classList.remove('drop-target');
+
+            const taskId = draggedTask.dataset.taskId;
+            const newDate = dropTarget.dataset.date;
+
+            if (taskId && newDate) {
+                moveTaskToDate(taskId, newDate);
+            }
+        }
+    }
+
+    function moveTaskToDate(taskId, newDate) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("MoveTask", "Calendar")';
+        form.style.display = 'none';
+
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = '__RequestVerificationToken';
+        tokenInput.value = $('input[name="__RequestVerificationToken"]').val();
+
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = taskId;
+
+        const dateInput = document.createElement('input');
+        dateInput.type = 'hidden';
+        dateInput.name = 'newDate';
+        dateInput.value = newDate;
+
+        form.appendChild(tokenInput);
+        form.appendChild(idInput);
+        form.appendChild(dateInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    // Функції для роботи з модальними вікнами
+    function showTaskDetails(taskId) {
+        $.get('@Url.Action("GetFullTask", "Calendar")/' + taskId, function (data) {
+            if (data.success) {
+                $('#taskModalBody').html(`
+                    <div class="alert alert-success">
+                        <h6>Завдання оновлено!</h6>
+                        <p><strong>EF:</strong> ${data.ef}</p>
+                        <p><strong>Повторення:</strong> ${data.repetition}</p>
+                        <p><strong>Інтервал:</strong> ${data.interval}</p>
+                        <p><strong>Наступне повторення:</strong> ${data.nextReview}</p>
+                    </div>
+                `);
+            } else {
+                $('#taskModalBody').html(`
+                    <div class="alert alert-warning">
+                        ${data.message}
+                    </div>
+                `);
+            }
+            $('#taskModal').modal('show');
+        });
+    }
+
+    function showRateModal(taskId) {
+        $('#rateModalBody').html(`
+            <form id="rateForm">
+                <input type="hidden" name="id" value="${taskId}" />
+                <p>Для оцінки засвоєння теми пройдіть тест:</p>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success" onclick="submitRating(${taskId})">
+                        ✅ Готово до оцінки
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Скасувати
+                    </button>
+                </div>
+            </form>
+        `);
+        $('#rateModal').modal('show');
+    }
+
+    function submitRating(taskId) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("RateTask", "Calendar")';
+
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = '__RequestVerificationToken';
+        tokenInput.value = $('input[name="__RequestVerificationToken"]').val();
+
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = taskId;
+
+        form.appendChild(tokenInput);
+        form.appendChild(idInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    function deleteTask(taskId) {
+        if (confirm('Ви впевнені, що хочете видалити це завдання?')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("DeleteTask", "Calendar")';
+
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = '__RequestVerificationToken';
+            tokenInput.value = $('input[name="__RequestVerificationToken"]').val();
+
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = taskId;
+
+            form.appendChild(tokenInput);
+            form.appendChild(idInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+</script>
+
+@Html.AntiForgeryToken()

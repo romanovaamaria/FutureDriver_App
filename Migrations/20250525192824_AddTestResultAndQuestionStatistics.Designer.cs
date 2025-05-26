@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApp.Models;
 
@@ -11,9 +12,11 @@ using MyApp.Models;
 namespace MyApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525192824_AddTestResultAndQuestionStatistics")]
+    partial class AddTestResultAndQuestionStatistics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,52 +251,6 @@ namespace MyApp.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MyApp.Models.CalendarTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("EF")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Interval")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("NextReview")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Repetition")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TaskType")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserSettingsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserSettingsId");
-
-                    b.ToTable("CalendarTasks");
-                });
-
             modelBuilder.Entity("MyApp.Models.CustomCard", b =>
                 {
                     b.Property<int>("Id")
@@ -320,6 +277,45 @@ namespace MyApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CustomCards");
+                });
+
+            modelBuilder.Entity("MyApp.Models.MyApp.Models.TestResult", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTaken")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("Percentage")
+                        .HasColumnType("real");
+
+                    b.Property<string>("QuestionsJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TimeSpentSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TestResults");
                 });
 
             modelBuilder.Entity("MyApp.Models.Question", b =>
@@ -415,45 +411,6 @@ namespace MyApp.Migrations
                     b.ToTable("SavedQuestions");
                 });
 
-            modelBuilder.Entity("MyApp.Models.TestResult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("CorrectAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateTaken")
-                        .HasColumnType("datetime2");
-
-                    b.Property<float>("Percentage")
-                        .HasColumnType("real");
-
-                    b.Property<string>("QuestionsJson")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TimeSpentSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TestResults");
-                });
-
             modelBuilder.Entity("MyApp.Models.UserBadge", b =>
                 {
                     b.Property<int>("Id")
@@ -547,34 +504,6 @@ namespace MyApp.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("MyApp.Models.UserSettings", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DesiredNewTopicInterval")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("NotificationsEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<TimeSpan?>("PreferredStudyTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSettings");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -637,17 +566,6 @@ namespace MyApp.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("MyApp.Models.CalendarTask", b =>
-                {
-                    b.HasOne("MyApp.Models.UserSettings", "UserSettings")
-                        .WithMany("CalendarTasks")
-                        .HasForeignKey("UserSettingsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserSettings");
-                });
-
             modelBuilder.Entity("MyApp.Models.QuestionStatistics", b =>
                 {
                     b.HasOne("MyApp.Models.Question", "Question")
@@ -696,17 +614,6 @@ namespace MyApp.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MyApp.Models.UserSettings", b =>
-                {
-                    b.HasOne("MyApp.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("MyApp.Models.CustomCard", b =>
                 {
                     b.Navigation("SavedQuestions");
@@ -720,11 +627,6 @@ namespace MyApp.Migrations
             modelBuilder.Entity("MyApp.Models.UserGamification", b =>
                 {
                     b.Navigation("Badges");
-                });
-
-            modelBuilder.Entity("MyApp.Models.UserSettings", b =>
-                {
-                    b.Navigation("CalendarTasks");
                 });
 #pragma warning restore 612, 618
         }

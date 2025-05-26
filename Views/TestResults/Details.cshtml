@@ -1,0 +1,44 @@
+﻿@model MyApp.ViewModels.TestResultDetailsViewModel
+@{
+    ViewBag.Title = "Деталі тесту";
+    var result = Model.TestResult;
+    var questionResults = Model.QuestionResults;
+}
+<a asp-action="Index" class="btn btn-secondary mb-3">Назад</a>
+
+<h2>Деталі тесту</h2>
+
+<p><strong>Дата:</strong> @result.DateTaken.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+<p><strong>Категорія:</strong> @result.Category</p>
+<p><strong>Правильних відповідей:</strong> @result.CorrectAnswers / @result.TotalQuestions (@Math.Round(result.Percentage, 2)%)</p>
+
+<hr />
+
+<h3>Питання:</h3>
+@foreach (var qr in questionResults)
+{
+    <div class="card mb-3 @(qr.IsCorrect ? "border-success" : "border-danger")">
+        <div class="card-body">
+            <p><strong>Питання:</strong> @qr.QuestionText</p>
+            <ul>
+                @foreach (var option in qr.AnswerOptions)
+                {
+                    bool isSelected = option.Id == qr.SelectedAnswerId;
+                    bool isCorrect = option.IsCorrect;
+
+                    <li class="@(isSelected ? (isCorrect ? "text-success fw-bold" : "text-danger fw-bold") : (isCorrect ? "text-success" : ""))">
+                        @option.Text
+                        @if (isSelected)
+                        {
+                            <span>(Ваш вибір)</span>
+                        }
+                        @if (isCorrect)
+                        {
+                            <span>(Правильна відповідь)</span>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

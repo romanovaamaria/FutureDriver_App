@@ -1,0 +1,130 @@
+﻿@using MyApp.Models
+@model List<TestResult>
+@{
+    ViewBag.Title = "Мої результати тестів";
+}
+
+<h1>Мої результати тестів</h1>
+
+<form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-3">
+            <label>Категорія</label>
+            <select name="category" class="form-control">
+                <option value="">Всі</option>
+                @foreach (var category in ViewBag.Categories as List<string>)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label>З дати</label>
+            <input type="date" name="from" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>До дати</label>
+            <input type="date" name="to" class="form-control" />
+        </div>
+        <div class="col-md-3 align-self-end">
+            <button type="submit" class="btn btn-primary w-100">Фільтрувати</button>
+        </div>
+    </div>
+</form>
+
+
+
+<canvas id="progressChart" width="800" height="400"></canvas>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Дата</th>
+            <th>Категорія</th>
+            <th>Кількість <br />питань</th>
+            <th>Правильних <br />відповідей</th>
+            <th>Оцінка</th>
+            <th>Деталі <br />тесту</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <td>@result.DateTaken.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    <form method="post" asp-action="StartTest" asp-controller="Exam">
+                        <input type="hidden" name="format" value="previous" />
+                        <input type="hidden" name="testResultId" value="@result.Id" />
+                        <button type="submit" class="btn btn-primary">@result.Category</button>
+                    </form>
+                </td>
+                <td>@result.TotalQuestions</td>
+                <td>@result.CorrectAnswers</td>
+                <td>@Math.Round(result.Percentage, 2)%</td>
+                <td><br />
+                    <a asp-action="Details" asp-route-id="@result.Id" class="btn btn-primary ">🔍︎</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('progressChart').getContext('2d');
+        var labels = @Html.Raw(Json.Serialize(Model.Select(r => r.DateTaken.ToLocalTime().ToString("yyyy-MM-dd"))));
+        var data = @Html.Raw(Json.Serialize(Model.Select(r => r.Percentage)));
+
+        var progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Успішність (%)',
+                    data: data,
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Поріг 90%',
+                    data: Array(labels.length).fill(90),
+                    borderColor: 'red',
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        title: {
+                            display: true,
+                            text: 'Відсоток'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Дата'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Графік успішності (відфільтровані дані)'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}
