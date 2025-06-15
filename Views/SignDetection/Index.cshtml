@@ -1,26 +1,52 @@
 ﻿@{
     ViewData["Title"] = "Розпізнавання дорожніх знаків";
 }
-
 <div class="container mt-4">
     <h2>Розпізнавання дорожніх знаків</h2>
 
-    <form method="post" enctype="multipart/form-data" asp-controller="SignDetection" asp-action="DetectSign">
-        <div class="form-group mb-3">
-            <label for="file" class="form-label">Виберіть зображення дорожнього знаку:</label>
-            <input type="file" name="file" id="file" class="form-control" accept="image/*" required />
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" asp-controller="SignDetection" asp-action="DetectSign">
+                        <div class="form-group mb-3">
+                            <label for="file" class="form-label">Виберіть зображення дорожнього знаку:</label>
+                            <input type="file" name="file" id="file" class="form-control" accept="image/*" required />
+                            <div class="form-text">Підтримувані формати: JPG, PNG, GIF</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Розпізнати знак
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Розпізнати</button>
-    </form>
+
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">Інструкція</h5>
+                    <ul class="list-unstyled">
+                        <li>📷 Завантажте чітке зображення дорожнього знаку</li>
+                        <li>🔍 Натисніть "Розпізнати знак"</li>
+                        <li>📋 Отримайте детальну інформацію про знак</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert alert-danger mt-3">
+            <h6>Помилка:</h6>
             <div asp-validation-summary="All"></div>
         </div>
     }
 </div>
-@if (ViewBag.ImagePath != null && ViewBag.DetectionResult != null)
+
+@* Відображення результатів розпізнавання *@
+@if (ViewBag.ImagePath != null && ViewBag.SignInfo != null)
 {
-    @await Html.PartialAsync("_DetectionResult", (ImagePath: (string)ViewBag.ImagePath, DetectionResult: (string)ViewBag.DetectionResult))
+    @await Html.PartialAsync("_DetectionResult")
 }

@@ -1,11 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-
 @{
     var user = await UserManager.GetUserAsync(User);
     var isAdmin = false;
-
     if (user != null)
     {
         isAdmin = await UserManager.IsInRoleAsync(user, "admin");
@@ -13,14 +11,62 @@
 }@{
     ViewData["Title"] = "Головна";
 }
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stats-section {
+            background-color: #f8f9fa;
+            padding: 3rem 0;
+            margin: 3rem 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
@@ -30,41 +76,172 @@
             <hr class="my-4">
         </div>
 
-        <div class="row">
-            <div class="col-md-4">
-                <h2>Тести</h2>
-                <p>Пройдіть різні тести, щоб підготуватися до іспиту з ПДР.</p>
-                <a class="btn btn-primary" href="/Exam/SelectTestFormat">Перейти до тестів</a>
+    <div class="container">
+        <!-- Main Features -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <h2 class="text-center mb-4">Основні можливості застосунку</h2>
             </div>
-            <div class="col-md-4">
-                <h2>Перелік питань</h2>
-                <p>Ознайомтеся з питаннями з різних категорій, щоб краще підготуватися.</p>
-                <a class="btn btn-primary" href="/Browse/Index">Переглянути питання</a>
-            </div>
-            @{
-                if (User.Identity.IsAuthenticated)
-                {
-                    <div class="col-md-4">
-                        <h2>Збережені питання</h2>
-                        <p>Зберігайте питання і переглядайте їх у зручному форматі Flipcard.</p>
+        </div>
 
-                        <a class="btn btn-primary" href="/Card">Перейти</a>
+        <div class="row g-4 mb-5">
+            <!-- Tests -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box bg-primary text-white">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <h4 class="card-title">Тести ПДР</h4>
+                        <p class="card-text">Пройдіть різні тести, щоб підготуватися до іспиту з ПДР. Офіційні питання та формат іспиту.</p>
+                        <a class="btn btn-primary" href="/Exam/SelectTestFormat">Перейти до тестів</a>
                     </div>
-                }
-                else
-                {
-                    <div class="col-md-4">
-                <h2>Авторизація</h2>
-                <p>Здійсність реєстрацію для доступу до додаткових можливостей, таких як збереження питань.</p>
-            
-                <a class="btn btn-primary" href="/Account/Register">Зареєструватись</a>
-                <a href="/Account/Login">Вже маєте обліковий запис?</a> <br />
+                </div>
             </div>
-                }
-            }
 
-            
+            <!-- Browse Questions -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box bg-success text-white">
+                            <i class="bi bi-list-ul"></i>
+                        </div>
+                        <h4 class="card-title">Перелік питань</h4>
+                        <p class="card-text">Ознайомтеся з питаннями з різних категорій та тем для кращої підготовки.</p>
+                        <a class="btn btn-success" href="/Browse/Index">Переглянути питання</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autoschools -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box bg-warning text-white">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h4 class="card-title">Автошколи</h4>
+                        <p class="card-text">Знайдіть інформацію про акредитовані автошколи з потрібними категоріями підготовки у бажаній локації.</p>
+                        <a class="btn btn-warning" href="/Autoschool">Знайти автошколу</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sign Detection -->
+            <div class="col-md-6 col-lg-4">
+                <div class="card feature-card">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box bg-info text-white">
+                            <i class="bi bi-sign-stop"></i>
+                        </div>
+                        <h4 class="card-title">Розпізнавання знаків</h4>
+                        <p class="card-text">Інтерактивний модуль для розпізнавання дорожніх знаків за фото.</p>
+                        <a class="btn btn-info" href="/SignDetection">Вивчати знаки</a>
+                    </div>
+                </div>
+            </div>
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <!-- Calendar -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box bg-danger text-white">
+                                <i class="bi bi-calendar-event"></i>
+                            </div>
+                            <h4 class="card-title">Календар навчання</h4>
+                            <p class="card-text">Плануйте своє навчання з допомогою системи інтервальних повторень.</p>
+                            <a class="btn btn-danger" href="/Calendar">Відкрити календар</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Questions -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box bg-secondary text-white">
+                                <i class="bi bi-bookmark-heart"></i>
+                            </div>
+                            <h4 class="card-title">Збережені питання</h4>
+                            <p class="card-text">Зберігайте складні питання і вивчайте їх у форматі флеш-карток.</p>
+                            <a class="btn btn-secondary" href="/Card">Мої картки</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Test Results -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box bg-primary text-white">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <h4 class="card-title">Результати тестів</h4>
+                            <p class="card-text">Аналізуйте свої результати, відстежуйте прогрес та покращення.</p>
+                            <a class="btn btn-primary" href="/TestResults">Мої результати</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gamification -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box bg-success text-white">
+                                <i class="bi bi-trophy"></i>
+                            </div>
+                            <h4 class="card-title">Досягнення</h4>
+                            <p class="card-text">Заробляйте нагороди за виконані навчальні дії.</p>
+                            <a class="btn btn-success" href="/Gamification">Мої досягнення</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- Registration Card -->
+                <div class="col-md-12 col-lg-8 mx-auto">
+                    <div class="card feature-card border-primary">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box bg-primary text-white">
+                                <i class="bi bi-person-plus"></i>
+                            </div>
+                            <h4 class="card-title">Зареєструйтеся для додаткових можливостей</h4>
+                            <p class="card-text mb-3">Отримайте доступ до календаря навчання, збереження питань, аналізу результатів та системи досягнень!</p>
+                            <div class="d-flex gap-3 justify-content-center">
+                                <a class="btn btn-primary btn-lg" href="/Account/Register">
+                                    <i class="bi bi-person-plus me-2"></i>Зареєструватись
+                                </a>
+                                <a class="btn btn-outline-primary btn-lg" href="/Account/Login">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Увійти
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+       
+
+        <!-- Call to Action -->
+        <div class="text-center mb-5">
+            <h3 class="mb-3">Готові почати підготовку?</h3>
+            <p class="lead mb-4">Приєднуйтесь до користувачів, які успішно склали іспит з нашою допомогою!</p>
+            <a class="btn btn-primary btn-lg me-3" href="/Exam/SelectTestFormat">
+                <i class="bi bi-play-circle me-2"></i>Почати зараз
+            </a>
+            @if (!User.Identity.IsAuthenticated)
+            {
+                <a class="btn btn-outline-primary btn-lg" href="/Account/Register">
+                    <i class="bi bi-person-plus me-2"></i>Створити акаунт
+                </a>
+            }
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -33,9 +33,8 @@ namespace MyApp.Controllers
             ViewBag.Categories = categories;
             return View();
         }
-
         [HttpPost]
-        public IActionResult StartTest(string format, string category = null, int? testResultId = null)
+        public IActionResult StartTest(string format, string category = null, int? testResultId = null, int? randomCount = null)
         {
             if (format == "category" && !string.IsNullOrEmpty(category))
             {
@@ -46,17 +45,22 @@ namespace MyApp.Controllers
             }
             else if (format == "random")
             {
+                int totalQuestions = _context.Questions.Count();
+                if (!randomCount.HasValue || randomCount.Value < 1 || randomCount.Value > totalQuestions)
+                {
+                    TempData["Error"] = $"Кількість випадкових питань повинна бути від 1 до {totalQuestions}.";
+                    return RedirectToAction("SelectTestFormat");
+                }
+
                 _questions = _context.Questions
                     .Include(q => q.AnswerOptions)
                     .OrderBy(r => EF.Functions.Random())
-                    .Take(20)
+                    .Take(randomCount.Value)
                     .ToList();
             }
             else if (format == "previous" && testResultId.HasValue)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                // Беремо результат тесту цього користувача
                 var result = _context.TestResults
                     .FirstOrDefault(r => r.Id == testResultId.Value && r.UserId == userId);
 
@@ -66,7 +70,6 @@ namespace MyApp.Controllers
                 }
 
                 var questionSummaries = JsonSerializer.Deserialize<List<QuestionSummaryDto>>(result.QuestionsJson);
-
                 var questionIds = questionSummaries.Select(q => q.QuestionId).ToList();
 
                 _questions = _context.Questions

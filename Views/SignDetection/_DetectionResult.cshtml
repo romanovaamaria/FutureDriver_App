@@ -1,17 +1,38 @@
-﻿@model (string ImagePath, string DetectionResult)
+﻿@{
+    var signInfo = ViewBag.SignInfo as MyApp.Models.TrafficSignInfo;
+    var imagePath = ViewBag.ImagePath as string;
+}
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <img src="@Model.ImagePath" alt="Дорожній знак" class="img-thumbnail" />
-    </div>
-    <div class="col-md-6">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Розпізнаний знак</h3>
-            </div>
-            <div class="panel-body">
-                <h4>@Model.DetectionResult</h4>
+@if (signInfo != null && !string.IsNullOrEmpty(imagePath))
+{
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <img src="@imagePath" alt="Дорожній знак" class="img-thumbnail" style="max-width: 100%; height: auto;" />
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Розпізнаний дорожній знак</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="text-primary mb-3">@signInfo.Name</h4>
+
+                    <div class="mb-3">
+                        <strong>Тип знаку:</strong>
+                        <span class="badge badge-secondary ml-2">@signInfo.Type</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Призначення:</strong>
+                        <p class="mt-1">@signInfo.Purpose</p>
+                    </div>
+
+                    <div class="mb-0">
+                        <strong>Опис:</strong>
+                        <p class="mt-1 text-muted">@signInfo.Description</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}

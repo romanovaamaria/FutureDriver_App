@@ -1,12 +1,11 @@
-﻿using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.Extensions.Logging;
-using System;
+﻿/*using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace MyApp.Models
 {
@@ -20,22 +19,30 @@ namespace MyApp.Models
 
     public class TrafficSignDetector
     {
-        private readonly InferenceSession _session;
+        private readonly string _batScriptPath;
+        private readonly string _modelPath;
         private readonly ILogger<TrafficSignDetector> _logger;
 
         public TrafficSignDetector(string basePath, ILogger<TrafficSignDetector> logger)
         {
             _logger = logger;
 
-            string modelPath = Path.Combine(basePath, "MLModels", "model.onnx");
+            // Use relative paths based on the application's base path
+            _batScriptPath = Path.Combine(basePath, "PythonEnv", "run_detector.bat");
+            _modelPath = Path.Combine(basePath, "PythonEnv", "models", "model.h5");
 
-            if (!File.Exists(modelPath))
+            // Check if files exist
+            if (!File.Exists(_batScriptPath))
             {
-                _logger.LogError($"Model file not found: {modelPath}");
-                throw new FileNotFoundException("ONNX model file not found", modelPath);
+                _logger.LogError($"Batch file not found: {_batScriptPath}");
+                throw new FileNotFoundException("Python batch file not found", _batScriptPath);
             }
 
-            _session = new InferenceSession(modelPath);
+            if (!File.Exists(_modelPath))
+            {
+                _logger.LogError($"Model not found: {_modelPath}");
+                throw new FileNotFoundException("Model file not found", _modelPath);
+            }
         }
 
         public async Task<TrafficSignInfo> DetectSignAsync(string imagePath)
@@ -46,60 +53,63 @@ namespace MyApp.Models
                 throw new FileNotFoundException("Image not found", imagePath);
             }
 
-            try
+            using (var process = new Process())
             {
-                float[] inputData = PreprocessImage(imagePath);
+                process.StartInfo.FileName = _batScriptPath;
+                process.StartInfo.Arguments = $"\"{imagePath}\" \"{_modelPath}\"";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.CreateNoWindow = true;
 
-                var inputTensor = new DenseTensor<float>(new[] { 1, 32, 32, 1 });
-                for (int i = 0; i < inputData.Length; i++)
-                    inputTensor.Buffer.Span[i] = inputData[i];
+                _logger.LogInformation($"Starting process: {_batScriptPath} {process.StartInfo.Arguments}");
 
-                var inputs = new[] { NamedOnnxValue.CreateFromTensor("input", inputTensor) };
+                process.Start();
 
-                var results = _session.Run(inputs);
-                float[] output = results.First().AsEnumerable<float>().ToArray();
+                string output = await process.StandardOutput.ReadToEndAsync();
+                string error = await process.StandardError.ReadToEndAsync();
 
-                int predictedClass = Array.IndexOf(output, output.Max());
+                await Task.Run(() => process.WaitForExit());
 
-                if (SignsInfo.TryGetValue(predictedClass, out var signInfo))
+                // Запис stderr як INFO, якщо немає слова "error"
+                if (!string.IsNullOrWhiteSpace(error))
                 {
-                    _logger.LogInformation($"Detected sign class: {predictedClass} - {signInfo.Name}");
-                    return signInfo;
+                    if (error.ToLower().Contains("error") || error.ToLower().Contains("exception"))
+                    {
+                        _logger.LogError($"Python stderr: {error}");
+                        throw new Exception($"Python error: {error}");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Python stderr (non-critical): {error}");
+                    }
                 }
 
-                _logger.LogWarning($"Unknown class index: {predictedClass}");
-                return new TrafficSignInfo
-                {
-                    Name = $"Невідомий знак [{predictedClass}]",
-                    Description = "Знак не розпізнано",
-                    Type = "Невідомий",
-                    Purpose = "Немає"
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Detection error: {ex.Message}");
-                throw;
-            }
-        }
+                string cleanedOutput = output
+            .Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            .Where(line =>
+                !line.Contains("tensorflow", StringComparison.OrdinalIgnoreCase) &&
+                !line.Contains("ETA:") &&
+                !line.Contains("step") &&
+                !line.Contains("=") &&
+                !line.Contains("Creating new thread pool"))
+            .LastOrDefault()?.Trim();
 
-        private float[] PreprocessImage(string imagePath)
-        {
-            Bitmap bmp = new Bitmap(imagePath);
-            Bitmap resized = new Bitmap(bmp, new Size(32, 32));
-
-            float[] input = new float[32 * 32];
-            for (int y = 0; y < 32; y++)
-            {
-                for (int x = 0; x < 32; x++)
+                if (string.IsNullOrWhiteSpace(cleanedOutput))
                 {
-                    Color pixel = resized.GetPixel(x, y);
-                    int gray = (int)(0.299 * pixel.R + 0.587 * pixel.G + 0.114 * pixel.B);
-                    input[y * 32 + x] = gray / 255f;
+                    _logger.LogWarning("Could not extract detection result from Python output.");
+                    throw new Exception("Не вдалося виділити результат розпізнавання.");
                 }
-            }
 
-            return input;
+                TrafficSignInfo signInfo = GetSignInfoFromString(cleanedOutput);
+                if (signInfo == null)
+                {
+                    throw new Exception("Невідомий тип дорожнього знаку.");
+                }
+
+                _logger.LogInformation($"Результат розпізнавання: {signInfo.Name}");
+                return signInfo;
+            }
         }
 
         private static readonly Dictionary<int, TrafficSignInfo> SignsInfo = new Dictionary<int, TrafficSignInfo>()
@@ -148,6 +158,32 @@ namespace MyApp.Models
             {41, new TrafficSignInfo { Name = "Кінець заборони обгону", Type = "Інформаційний знак", Purpose = "Скасовує дію знаку заборони обгону", Description = "Позначає закінчення дії знаку «Обгін заборонено»" }},
             {42, new TrafficSignInfo { Name = "Кінець заборони обгону вантажівок понад 3.5 т", Type = "Інформаційний знак", Purpose = "Скасовує дію знаку заборони обгону для вантажівок", Description = "Позначає закінчення дії знаку «Обгін заборонено для вантажних автомобілів»" }}
         };
+
+        public static TrafficSignInfo GetSignInfoFromString(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            // Витягнути число з рядка, наприклад "[1]" -> 1
+            var match = Regex.Match(input, @"\[(\d+)\]");
+            if (!match.Success)
+                return null;
+
+            if (int.TryParse(match.Groups[1].Value, out int classNo))
+            {
+                if (SignsInfo.TryGetValue(classNo, out TrafficSignInfo signInfo))
+                    return signInfo;
+            }
+
+            return null;
+        }
+
+        // Backward compatibility method - повертає тільки назву
+        public static string GetClassNameFromString(string input)
+        {
+            var signInfo = GetSignInfoFromString(input);
+            return signInfo?.Name;
+        }
     }
-}
+}*/
 

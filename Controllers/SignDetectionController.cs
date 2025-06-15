@@ -22,10 +22,8 @@ namespace MyApp.Controllers
         {
             _environment = environment;
             _logger = logger;
-
             // Використовуємо ContentRootPath для доступу до файлів програми
             string basePath = _environment.ContentRootPath;
-
             // Створюємо детектор з базовим шляхом
             _detector = new TrafficSignDetector(basePath, detectorLogger);
         }
@@ -49,14 +47,12 @@ namespace MyApp.Controllers
                 // Save uploaded file
                 string fileName = Path.GetFileName(file.FileName);
                 string uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-
                 if (!Directory.Exists(uploadsFolder))
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
 
                 string filePath = Path.Combine(uploadsFolder, fileName);
-
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
@@ -65,11 +61,11 @@ namespace MyApp.Controllers
                 _logger.LogInformation($"File saved: {filePath}");
 
                 // Perform detection
-                string result = await _detector.DetectSignAsync(filePath);
-                _logger.LogInformation($"Detection result: {result}");
+                TrafficSignInfo signInfo = await _detector.DetectSignAsync(filePath);
+                _logger.LogInformation($"Detection result: {signInfo.Name}");
 
                 // Pass result to View
-                ViewBag.DetectionResult = result;
+                ViewBag.SignInfo = signInfo;
                 ViewBag.ImagePath = $"/uploads/{fileName}";
 
                 return View("Index");

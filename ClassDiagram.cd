@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MyApp.Services.CalendarService" BaseTypeListCollapsed="true">
+    <Position X="1.5" Y="2.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAgAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\CalendarService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MyApp.Services.GamificationService" BaseTypeListCollapsed="true">
+    <Position X="5" Y="2.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>ABAAAIAAAAAABAAAAAAAEAAAAAAAAAEAAAQAAAAAAAA=</HashCode>
+      <FileName>Services\GamificationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MyApp.Services.RepetitionResult">
+    <Position X="11" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAIAAAAAAAAAAAAAQIAAAAAAAAAA=</HashCode>
+      <FileName>Services\IRepetitionSchedulerService.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MyApp.Services.SpacedRepetitionService" BaseTypeListCollapsed="true">
+    <Position X="8" Y="3.25" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\SpacedRepetitionService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="MyApp.Services.ICalendarService">
+    <Position X="1.5" Y="5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\ICalendarService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MyApp.Services.IGamificationService">
+    <Position X="4.75" Y="5.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ABAAAIAAAAAAAAAAAAAAEAAAAAAAAAEAAAQAAAAAAAA=</HashCode>
+      <FileName>Services\IGamificationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="MyApp.Services.IRepetitionSchedulerService">
+    <Position X="8" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\IRepetitionSchedulerService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
